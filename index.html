@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Workout Posture Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .dashboard {
+            width: 100%;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .status {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .status p {
+            font-size: 18px;
+        }
+
+        .posture {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .posture p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .video-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        video {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #28a745;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        .buttons button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Smart Workout Posture Detection & Guidance
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="status">
+                <p><strong>Status:</strong> <span id="status">Waiting for detection...</span></p>
+                <p><strong>Guidance:</strong> <span id="guidance">Please start your workout</span></p>
+            </div>
+
+            <div class="video-container">
+                <video id="videoElement" autoplay></video>
+            </div>
+
+            <div class="posture">
+                <p><strong>Detected Posture:</strong> <span id="posture">N/A</span></p>
+                <p><strong>Feedback:</strong> <span id="feedback">Stand tall with your shoulders back!</span></p>
+            </div>
+
+            <div class="buttons">
+                <button id="startButton">Start Workout</button>
+                <button id="stopButton">Stop Workout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const status = document.getElementById('status');
+        const posture = document.getElementById('posture');
+        const feedback = document.getElementById('feedback');
+        const videoElement = document.getElementById('videoElement');
+        const guidance = document.getElementById('guidance');
+        
+        let isWorkoutActive = false;
+
+        // Start video stream (mock)
+        async function startVideo() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElement.srcObject = stream;
+            } catch (err) {
+                console.error("Error accessing webcam:", err);
+                alert("Unable to access the webcam. Please allow camera permissions.");
+            }
+        }
+
+        // Posture detection mock (can integrate real posture detection here)
+        function detectPosture() {
+            if (isWorkoutActive) {
+                const postureState = "Good"; // This is a mock; replace with real detection logic
+                posture.textContent = postureState;
+
+                // Provide feedback based on posture
+                if (postureState === "Good") {
+                    feedback.textContent = "Great job! Keep it up!";
+                    guidance.textContent = "Try to maintain this posture.";
+                } else {
+                    feedback.textContent = "Fix your posture!";
+                    guidance.textContent = "Stand tall with shoulders back!";
+                }
+            }
+        }
+
+        // Start button action
+        startButton.addEventListener('click', () => {
+            isWorkoutActive = true;
+            status.textContent = "Workout in Progress...";
+            startVideo();
+            setInterval(detectPosture, 2000);  // Detect posture every 2 seconds
+        });
+
+        // Stop button action
+        stopButton.addEventListener('click', () => {
+            isWorkoutActive = false;
+            status.textContent = "Workout Stopped";
+            posture.textContent = "N/A";
+            feedback.textContent = "No workout detected.";
+            guidance.textContent = "Please start your workout.";
+            if (videoElement.srcObject) {
+                let stream = videoElement.srcObject;
+                let tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+                videoElement.srcObject = null;
+            }
+        });
+
+    </script>
+</body>
+</html>
